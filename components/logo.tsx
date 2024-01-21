@@ -11,7 +11,7 @@ const Logo = () => {
   return (
     <Link href="/">
       <div className="items-center gap-x-2 hidden md:flex">
-        <Image src="/logo.svg" alt="Talis Logo" width={30} height={30} />
+        <Image src="/logo.svg" alt="Talis Logo" width={27} height={27} />
         <p
           className={cn("text-xl text-neutral-700 pb-1", headingFont.className)}
         >
