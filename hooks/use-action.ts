@@ -50,29 +50,34 @@ export const useAction = <TInput, TOutput>(
    */
   const execute = useCallback(
     async (input: TInput) => {
-      setIsLoading(true);
+      setIsLoading(true); 
 
-      try {
+      
+      try { 
         const result = await action(input);
 
+        // If the action returns a falsy value, return early.
         if (!result) {
           return;
         }
 
+        // If the action returns field errors, set the fieldErrors state variable to these errors.
+        setFieldErrors(result.fieldErrors); 
 
-        setFieldErrors(result.fieldErrors);
-        
-
+        // If the action returns an error, set the error state variable to this error and call the onError option with the error if it is provided.
         if (result.error) {
           setError(result.error);
           options.onError?.(result.error);
         }
 
+        // If the action returns data, set the data state variable to this data and call the onSuccess option with the data if it is provided.
         if (result.data) {
           setData(result.data);
           options.onSuccess?.(result.data);
         }
-      } finally {
+
+      // Finally, set isLoading to false to indicate that the action has completed and call the onComplete option if it is provided.
+      } finally { 
         setIsLoading(false);
         options.onComplete?.();
       }

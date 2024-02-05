@@ -1,6 +1,5 @@
 'use server';
 
-
 import { db } from "@/lib/db";
 import { InputType, ReturnType } from "./types";
 import { auth } from "@clerk/nextjs";
@@ -30,7 +29,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
     try{
         board = await db.board.create({
-            data: {
+            data: { 
                 title 
             }
         })
@@ -40,9 +39,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         }
     }
 
-    revalidatePath(`/board/${board.id}`);
+    revalidatePath(`/board/${board.id}`); // this will revalidate the cache for the board page.
     return {data: board}; 
 
 }
+
 
 export const createBoard = createSafeAction(CreateBoard, handler); // this is the action function that will be exported and used in the pages. 

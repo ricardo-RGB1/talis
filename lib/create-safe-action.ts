@@ -36,12 +36,16 @@ export const createSafeAction = <TInput, TOutput>(
     handler: (validatedData: TInput) => Promise<ActionState<TInput, TOutput>> 
 ) => {
     return async (data: TInput): Promise<ActionState<TInput, TOutput>> => {
+        // this will validate the input data using the schema.
         const validationResult = schema.safeParse(data); 
-        if(!validationResult.success) {
+        // if the input data is not valid, then return the field errors.
+        
+        if(!validationResult.success) { 
             return {
-                fieldErrors: validationResult.error.flatten().fieldErrors as FieldErrors<TInput>,
+                fieldErrors: validationResult.error.flatten().fieldErrors as FieldErrors<TInput>, // this will return the field errors for the input data.
             }
         }
-        return handler(validationResult.data);
+        // if the input data is valid, then execute the handler function.
+        return handler(validationResult.data); 
     }
 }
