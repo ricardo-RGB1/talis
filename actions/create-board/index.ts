@@ -15,22 +15,54 @@ import { createSafeAction } from "@/lib/create-safe-action";
  * @returns A promise that resolves to the created board or an error object.
  */
 const handler = async (data: InputType): Promise<ReturnType> => {
-    const { userId } = auth(); 
+    const { userId, orgId } = auth();  // this will get the user and org id from the session.
 
-    if(!userId) {
+    if(!userId || !orgId) {
         return {
             error: "Unauthorized",
         }; 
     }
 
-    const { title } = data; // this is the data that was passed in from the action function.
+    const { title, image } = data; // this is the data that was passed in from the action function.
+
+
+    /** 
+     * Splits the given image string into individual values.
+     * 
+     * @param image - The image string to be split.
+     * @returns An array containing the individual values of the image string.
+     */
+    const [ 
+         imageId,
+         imageThumbUrl,
+         imageFullUrl,
+         imageLinkHTML,
+         imageUserName 
+    ] = image.split("|"); // this will split the image string into individual values.
+  
+     
+
+    // if any of the required fields are missing, return an error.
+    if(!imageId || !imageThumbUrl || !imageFullUrl || !imageLinkHTML || !imageUserName) {
+        return {
+            error: "Missing fields. Failed to create board."
+        }
+    }
+
+
 
     let board; // this will be the board that is created.
 
     try{
         board = await db.board.create({
             data: { 
-                title 
+                title,
+                orgId,
+                imageId,
+                imageThumbUrl,
+                imageFullUrl,
+                imageLinkHTML,  
+                imageUserName,
             }
         })
     } catch(error) {
@@ -44,5 +76,5 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
 }
 
-
-export const createBoard = createSafeAction(CreateBoard, handler); // this is the action function that will be exported and used in the pages. 
+// this is the action function that will be exported and used in the pages. 
+export const createBoard = createSafeAction(CreateBoard, handler); 

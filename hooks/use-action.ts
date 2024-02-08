@@ -13,6 +13,8 @@ type Action<TInput, TOutput> = (
   data: TInput
 ) => Promise<ActionState<TInput, TOutput>>;
 
+
+
 /**
  * Options for the useAction hook.
  *
@@ -33,12 +35,20 @@ interface UseActionOptions<TOutput> {
  * @returns An object containing the field errors, error, data, isLoading, and execute function.
  */
 export const useAction = <TInput, TOutput>(
-  action: Action<TInput, TOutput>,
+  action: Action<TInput, TOutput>, 
   options: UseActionOptions<TOutput> = {}
 ) => {
-  const [fieldErrors, setFieldErrors] = useState<
-    FieldErrors<TInput> | undefined
-  >(undefined);
+
+
+  
+  /**
+   * A custom hook that manages field errors and their state.
+   *
+   * @template TInput - The type of the input object.
+   * @param {FieldErrors<TInput> | undefined} initialState - The initial state of the field errors.
+   * @returns {[FieldErrors<TInput> | undefined, React.Dispatch<React.SetStateAction<FieldErrors<TInput> | undefined>>]} - The field errors state and its setter function.
+   */
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors<TInput> | undefined>(undefined);
 
   const [error, setError] = useState<string | undefined>(undefined); // this is the error message that will be displayed to the user if the action fails.
   const [data, setData] = useState<TOutput | undefined>(undefined); // this is the data that will be returned from the action if it succeeds.

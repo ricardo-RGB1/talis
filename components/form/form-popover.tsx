@@ -1,5 +1,7 @@
 'use client'; 
 
+import { useRef, ElementRef } from "react"; 
+import { useRouter } from "next/navigation";
 import { toast } from 'sonner'; 
 import {
     Popover,
@@ -15,6 +17,8 @@ import { FormInput } from "./form-input";
 import { FormSubmit } from './form-submit';
 import { Button } from "../ui/button";
 import { X } from "lucide-react";
+import { FormPicker } from './form-picker';
+
 
 
 
@@ -25,6 +29,8 @@ interface FormPopoverProps {
     sideOffset?: number;
 }; 
 
+
+
 export const FormPopover = ({
     children,
     side, 
@@ -32,38 +38,39 @@ export const FormPopover = ({
     sideOffset = 0,
 }: FormPopoverProps) => {
 
+    const router = useRouter();
+    const closeRef = useRef<ElementRef<"button">>(null) // this will be used to close the popover.
     
-    /**
-     * Executes the createBoard action and handles the success and error cases.
-     * @param {object} data - The data returned from the createBoard action.
-     * @param {object} error - The error object returned from the createBoard action.
-     */
-    const { execute, fieldErrors } = useAction(createBoard, {
+    
+    const { execute, fieldErrors } = useAction(createBoard, { 
         onSuccess: (data) => {
-            console.log({data});
             toast.success('Board created successfully');
+            closeRef.current?.click(); // this will close the popover.
+            router.push(`/board/${data.id}`); // this will redirect the user to the board page.
         },
         onError:(error) => {
-            console.log({error}); 
             toast.error('Failed to create board');
         }
     });
 
 
+  
     /**
-     * Handles form submission.
+     * Handles the form submission.
      * 
      * @param formData - The form data.
      */
     const onSubmit = (formData: FormData) => {
         const title = formData.get('title') as string; 
-        execute({title});
+        const image = formData.get('image') as string; 
+        execute({title, image});
+     
     }
 
 
     return (
         <Popover>
-          <PopoverTrigger asChild>
+          <PopoverTrigger asChild> 
             {children}
           </PopoverTrigger>
           <PopoverContent
@@ -76,7 +83,7 @@ export const FormPopover = ({
                 Create board
             </div>
 
-            <PopoverClose asChild> 
+            <PopoverClose ref={closeRef} asChild> 
                 <Button 
                     className="h-auto w-auto p-2 absolute top-2 right-2 text-neutral-600"
                     variant='ghost'
@@ -87,6 +94,10 @@ export const FormPopover = ({
 
             <form action={onSubmit} className="space-y-4">
                 <div className="space-y-4">
+                    <FormPicker 
+                        id='image' 
+                        errors={fieldErrors}
+                    />
                     <FormInput 
                         id='title'
                         label='Board title' 

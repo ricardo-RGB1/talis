@@ -22,7 +22,8 @@ export const FormErrors = ({
           aria-live="polite"
           className='mt-2 text-xs text-rose-500'
         >
-        {errors?.[id]?.map((error:string) => ( // Map through the errors and display them
+        {/* // Map through the errors and display them */}
+        {errors?.[id]?.map((error:string) => ( 
             <div 
                 key={error}
                 className='flex items-center font-medium p-2 border border-rose-500 bg-rose-500/10 rounded-sm'
