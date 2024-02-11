@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: {
     default: siteConfig.name,
-    template: `$s | ${siteConfig.name}` // $s is the page title, e.g My-Organization | Talis
+    template: `%s | ${siteConfig.name}` // %s is the page title, e.g My-Organization | Talis
   },
   description: siteConfig.description,
   icons: [ 

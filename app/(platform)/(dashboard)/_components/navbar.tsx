@@ -27,7 +27,7 @@ export const Navbar = () => {
             <Button
             variant="primary"
             size="sm"
-            className="rounded-sm block md:hidden"
+            className="rounded-sm block md:hidden" 
             >
             <Plus className="h-5 w-5" />
             </Button>
