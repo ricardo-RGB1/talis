@@ -50,9 +50,12 @@ export const useAction = <TInput, TOutput>(
    */
   const [fieldErrors, setFieldErrors] = useState<FieldErrors<TInput> | undefined>(undefined);
 
-  const [error, setError] = useState<string | undefined>(undefined); // this is the error message that will be displayed to the user if the action fails.
-  const [data, setData] = useState<TOutput | undefined>(undefined); // this is the data that will be returned from the action if it succeeds.
-  const [isLoading, setIsLoading] = useState<boolean>(false); // this is a boolean that will be used to determine if the action is currently loading.
+  // this is the error message that will be displayed to the user if the action fails.
+  const [error, setError] = useState<string | undefined>(undefined); 
+  // this is the data that will be returned from the action if it succeeds.
+  const [data, setData] = useState<TOutput | undefined>(undefined); 
+   // this is a boolean that will be used to determine if the action is currently loading.
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   /**
    * Executes the action with the provided input and handles the result.

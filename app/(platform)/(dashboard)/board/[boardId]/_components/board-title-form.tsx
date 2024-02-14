@@ -4,20 +4,38 @@ import { FormInput } from "@/components/form/form-input";
 import { Button } from "@/components/ui/button";
 import { Board } from "@prisma/client";
 
+import { updateBoard } from "@/actions/update-board";
+import { useAction } from "@/hooks/use-action";
 
 import { useState, ElementRef, useRef } from "react";
+import { toast } from "sonner";
 
 interface BoardTitleFormProps {
   data: Board;
 }
 
 export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
+  // Use the updateBoard action
+  const { execute } = useAction(updateBoard, {
+    onSuccess: (data) => {
+      toast.success(`Board "${data.title}" updated successfully`);
+      setTitle(data.title); 
+      disableEditing();
+    }, 
+    onError: (error) => {
+      toast.error(error);
+    }
+  })
+
+
+
   const formRef = useRef<ElementRef<"form">>(null); // A ref to the form element
   const inputRef = useRef<ElementRef<"input">>(null); // A ref to the input element
 
-
   // A state to keep track of whether the title is being edited
   const [isEditing, setIsEditing] = useState(false); 
+   // A state to keep track of the title [boardTitleForm.tsx
+  const [title, setTitle] = useState(data.title);
 
   // A function to enable editing
   const enableEditing = () => {
@@ -28,7 +46,7 @@ export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
       inputRef.current?.select(); // Select the text in the input
     })
   }
-
+ 
 
   // A function to disable editing
   const disableEditing = () => {
@@ -39,6 +57,10 @@ export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
   const onSubmit = (formData: FormData) => {
     const title = formData.get("title") as string; // Get the title from the form data
     
+    execute({ // Execute the updateBoard action
+      title,
+      id: data.id,
+    })
   }
 
   // A function to handle the blur event on the input
@@ -54,7 +76,7 @@ export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
           ref={inputRef}
           id="title"
           onBlur={onBlur}
-          defaultValue={data.title}
+          defaultValue={title}
           className="text-lg font-bold px-[7px] py-1 h-7 bg-transparent focus-visible:outline-none focus-visible:ring-transparent border-none" 
         />
       </form>
@@ -68,7 +90,7 @@ export const BoardTitleForm = ({ data }: BoardTitleFormProps) => {
       variant="transparent"
       className="font-bold text-lg h-auto w-auto p-1 px-2"
     >
-      {data.title}
+      {title}
     </Button>
   );
 };
