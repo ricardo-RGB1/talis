@@ -10,6 +10,16 @@ interface ListContainerProps {
   boardId: string;
 }
 
+
+
+/**
+ * Renders a container component for displaying a list of items.
+ * 
+ * @param {Object} props - The component props.
+ * @param {Array} props.data - The list data to be displayed.
+ * @param {string} props.boardId - The ID of the board.
+ * @returns {JSX.Element} The rendered list container component.
+ */
 export const ListContainer = ({ data, boardId }: ListContainerProps) => {
   const [orderedData, setOrderedData] = useState(data); // The ordered list data
 
@@ -25,8 +35,9 @@ export const ListContainer = ({ data, boardId }: ListContainerProps) => {
           <ListItem 
             key={list.id}
             index={index}
-            data={list}
+            list={list}
           />
+          
         )
       })}
       <ListForm />
