@@ -176,7 +176,7 @@ export const ListContainer = ({ data, boardId }: ListContainerProps) => {
         setOrderedData(newOrderedData); // Update the ordered data with the new ordered data
         // TODO: Update the order of the cards in the database
         executeUpdateCardOrder({
-          items: destinationList.cards,
+          items: destinationList.cards,  
           boardId: boardId,
         });
       }
