@@ -17,7 +17,7 @@ interface FormTextareaProps {
   className?: string;
   onBlur?: () => void;
   onClick?: () => void;
-  onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement> | undefined;
+  onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement> | undefined; 
   defaultValue?: string;
 }
 
@@ -46,7 +46,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
           {label ? (
             <Label
               htmlFor={id}
-              className="text-xsfont-semibold text-neutral-700"
+              className="text-xs font-semibold text-neutral-700"
             >
               {label}
             </Label>
@@ -60,7 +60,7 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
             disabled={pending || disabled}
             onBlur={onBlur}
             onClick={onClick}
-            onKeyDown={onKeyDown}
+            onKeyDown={onKeyDown} 
             className={cn(
               "resize-none focus-visible:ring-0 focus-visible:ring-offset-0 ring-0 focus:ring-0 outline-none shadow-sm",
               className
