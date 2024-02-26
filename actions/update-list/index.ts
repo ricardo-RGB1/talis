@@ -8,12 +8,12 @@ import { revalidatePath } from "next/cache";
 
 import { createSafeAction } from "@/lib/create-safe-action";
 import { UpdateList } from "./schema";
-
-
+import { createdAuditLog } from "@/lib/create-audit-log";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 /**
  * Updates a list in the database.
- * 
+ *
  * @param data - The data containing the list information to be updated.
  * @returns A promise that resolves to the updated list or an error object.
  */
@@ -43,6 +43,13 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       data: {
         title,
       },
+    });
+    // Create an audit log
+    await createdAuditLog({
+      entityTitle: list.title,
+      entityId: list.id,
+      entityType: ENTITY_TYPE.LIST,
+      action: ACTION.UPDATE,
     });
   } catch (error) {
     return {

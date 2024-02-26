@@ -8,15 +8,12 @@ import { revalidatePath } from "next/cache";
 
 import { createSafeAction } from "@/lib/create-safe-action";
 import { CreateList } from "./schema";
-
-
-
-
-
+import { createdAuditLog } from "@/lib/create-audit-log";
+import { ENTITY_TYPE, ACTION } from "@prisma/client";
 
 /**
  * Handles the creation of a new list.
- * 
+ *
  * @param data - The input data for creating the list.
  * @returns A promise that resolves to the created list or an error object.
  */
@@ -47,7 +44,6 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       };
     }
 
-
     // Get the last list inside of the board so we can set the order of the new list
     const lastList = await db.list.findFirst({
       where: {
@@ -61,7 +57,6 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       },
     });
 
-
     const newOrder = lastList ? lastList.order + 1 : 1; // If there are no lists, set the order to 1
 
     // Create the list
@@ -71,6 +66,13 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         boardId,
         order: newOrder, // Set the order of the new list
       },
+    });
+    // Create an audit log
+    await createdAuditLog({
+      entityTitle: list.title,
+      entityId: list.id,
+      entityType: ENTITY_TYPE.LIST,
+      action: ACTION.CREATE,
     });
   } catch (error) {
     return {

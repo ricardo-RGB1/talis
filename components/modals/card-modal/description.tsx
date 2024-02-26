@@ -59,9 +59,12 @@ export const Description = ({ data }: DescriptionProps) => {
 
   const { execute, fieldErrors } = useAction(updateCard, {
     onSuccess: (data) => {
-        queryClient.invalidateQueries({
+        queryClient.invalidateQueries({  // invalidate the card query to refetch the card data
             queryKey: ['card', data.id],
-        }); // invalidate the card query to refetch the card data
+        });
+        queryClient.invalidateQueries({ // invalidate the card log query
+          queryKey: ["card-logs", data.id],
+        });
         // show a success toast message when the card is updated
         toast.success(`Updated card description`); 
         // disable editing after the card is updated

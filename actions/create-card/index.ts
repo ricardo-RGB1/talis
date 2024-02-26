@@ -8,6 +8,8 @@ import { revalidatePath } from "next/cache";
 
 import { createSafeAction } from "@/lib/create-safe-action";
 import { CreateCard } from "./schema";
+import { createdAuditLog } from "@/lib/create-audit-log";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 /**
  * Handles the creation of a new list.
@@ -66,6 +68,14 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         listId,
         order: newOrder,
       },
+    });
+
+    // Create an audit log for the created card
+    await createdAuditLog({
+      entityId: card.id,
+      entityTitle: card.title,
+      entityType: ENTITY_TYPE.CARD, // The entity type is a card
+      action: ACTION.CREATE, // The action is create
     });
   } catch (error) {
     return {

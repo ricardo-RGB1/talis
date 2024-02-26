@@ -40,9 +40,11 @@ export const Header = ({ data }: HeaderProps) => {
    */
   const { execute } = useAction(updateCard, {
     onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        // invalidate the card query to refetch the card data
+      queryClient.invalidateQueries({ // invalidate the card and card log queries
         queryKey: ["card", data.id],
+      });
+      queryClient.invalidateQueries({ // invalidate the card log query
+        queryKey: ["card-logs", data.id],
       });
 
       // show a success toast message when the card is updated

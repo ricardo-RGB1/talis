@@ -8,6 +8,8 @@ import { revalidatePath } from "next/cache";
 
 import { createSafeAction } from "@/lib/create-safe-action";
 import { UpdateCard } from "./schema";
+import { createdAuditLog } from "@/lib/create-audit-log";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 /**
  * Updates a card in the database.
@@ -41,6 +43,13 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       data: {
         ...values, // Update the card with the new values
       },
+    });
+    // Create an audit log
+    await createdAuditLog({
+      entityTitle: card.title,
+      entityId: card.id,
+      entityType: ENTITY_TYPE.CARD,
+      action: ACTION.UPDATE,
     });
   } catch (error) {
     return {

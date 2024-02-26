@@ -7,6 +7,8 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { CopyCard } from "./schema";
+import { createdAuditLog } from "@/lib/create-audit-log";
+import { ACTION, ENTITY_TYPE } from "@prisma/client";
 
 /**
  * Handles the copy list action.
@@ -54,24 +56,29 @@ const handler = async (data: InputType): Promise<ReturnType> => {
      */
     const lastCard = await db.card.findFirst({
       where: { listId: cardToCopy.listId }, // Find the last card in the list
-      orderBy: { order: 'desc'}, // Order by the order field in descending order
-      select: { order: true},  // Select the order field
+      orderBy: { order: "desc" }, // Order by the order field in descending order
+      select: { order: true }, // Select the order field
     });
 
     const newOrder = lastCard ? lastCard.order + 1 : 1; // Calculate the new order
-    
 
     // Create the new card
-    card = await db.card.create({ 
+    card = await db.card.create({
       data: {
         title: `${cardToCopy.title} (Copy)`, // Add (Copy) to the title
         description: cardToCopy.description, // Copy the description
         order: newOrder, // Set the new order
         listId: cardToCopy.listId, // Set the list ID
-      }
-    })
+      },
+    });
 
-
+    // Create an audit log
+    await createdAuditLog({
+      entityTitle: card.title,
+      entityId: card.id,
+      entityType: ENTITY_TYPE.CARD,
+      action: ACTION.CREATE,
+    });
   } catch (error) {
     return {
       error: "Failed to copy",

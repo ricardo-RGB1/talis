@@ -9,6 +9,8 @@ import { create } from "lodash";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { DeleteBoard } from "./schema";
 import { redirect } from "next/navigation";
+import { createdAuditLog } from "@/lib/create-audit-log";
+import { ENTITY_TYPE, ACTION } from "@prisma/client";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
@@ -22,7 +24,6 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   const { id } = data; // data is of type InputType
   let board;
 
-  
   // Delete the board
   try {
     board = await db.board.delete({
@@ -30,6 +31,13 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         id,
         orgId,
       },
+    });
+    // Create an audit log
+    await createdAuditLog({
+      entityTitle: board.title,
+      entityId: board.id,
+      entityType: ENTITY_TYPE.BOARD,
+      action: ACTION.DELETE,
     });
   } catch (error) {
     return {
@@ -41,11 +49,9 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   redirect(`/organization/${orgId}`); // Redirect to the organization page
 };
- 
+
 // Export the action
 export const deleteBoard = createSafeAction(DeleteBoard, handler);
-
-
 
 // This TypeScript code defines an asynchronous function handler that deletes a board from a database and then redirects the user to an organization page. The function is then exported as an action using the createSafeAction function.
 
