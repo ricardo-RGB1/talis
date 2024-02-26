@@ -55,12 +55,13 @@ export const decreaseAvailableCount = async () => {
     where: { orgId },
   });
 
-  if (orgLimit) {
+  
+  if (orgLimit) { // if orgLimit exists and the count is greater than 0 (to prevent negative counts)
     await db.orgLimit.update({
       where: { orgId },
-      data: { count: orgLimit.count > 0 ? orgLimit.count - 1 : 0 }, 
+      data: { count: orgLimit.count > 0 ? orgLimit.count - 1 : 0 }, // subtract 1 from the count
     });
-  } else {
+  } else { // if orgLimit does not exist, create a new orgLimit with a count of 1
     await db.orgLimit.create({
       data: { orgId, count: 1 },
     });

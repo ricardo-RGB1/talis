@@ -10,9 +10,9 @@ import { createdAuditLog } from "@/lib/create-audit-log";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
 import {
   incrementAvailableCount,
-  hasReachedMaxFreeBoards
+  hasReachedMaxFreeBoards,
 } from "@/lib/org-limit";
-
+import { checkSubscription } from "@/lib/subscription";
 
 /**
  * Handles the creation of a board.
@@ -31,12 +31,15 @@ const handler = async (data: InputType): Promise<ReturnType> => {
   }
 
   // this will check if the organization has reached the maximum number of free boards.
-  const hasReachedMax = await hasReachedMaxFreeBoards(); 
+  const hasReachedMax = await hasReachedMaxFreeBoards();
 
-  // if the organization has reached the maximum number of free boards, return an error.
-  if (!hasReachedMax) { 
+  // this will check if the organization has a pro subscription.
+  const isPro = await checkSubscription();
+
+  // if the organization has reached the maximum number of free boards and is not a pro user, return an error.
+  if (!hasReachedMax && !isPro) {
     return {
-      error: "You have reached the maximum number of free boards."
+      error: "You have reached the maximum number of free boards.",
     };
   }
 
@@ -48,7 +51,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
    * @param image - The image string to be split.
    * @returns An array containing the individual values of the image string.
    */
-  const [imageId, imageThumbUrl, imageFullUrl, imageLinkHTML, imageUserName] = image.split("|"); 
+  const [imageId, imageThumbUrl, imageFullUrl, imageLinkHTML, imageUserName] =
+    image.split("|");
 
   // if any of the required fields are missing, return an error.
   if (
@@ -78,8 +82,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
       },
     });
 
-    // After creating the board, increment the available board count for the organization.
-    await incrementAvailableCount();
+    if (!isPro) {
+      // if the user is not a pro user, increment the available free boards count.
+      await incrementAvailableCount();
+    }
 
     // Create an audit log
     await createdAuditLog({

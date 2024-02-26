@@ -18,6 +18,7 @@ import { FormSubmit } from './form-submit';
 import { Button } from "../ui/button";
 import { X } from "lucide-react";
 import { FormPicker } from './form-picker';
+import { useProModal } from "@/hooks/use-pro-modal";
 
 
 
@@ -37,7 +38,7 @@ export const FormPopover = ({
     align,
     sideOffset = 0,
 }: FormPopoverProps) => {
-
+    const proModal = useProModal(); // get the pro modal context
     const router = useRouter();
     const closeRef = useRef<ElementRef<"button">>(null) // this will be used to close the popover.
     
@@ -51,6 +52,7 @@ export const FormPopover = ({
         },
         onError:(error) => {
             toast.error(error); // this will display an error message.
+            proModal.onOpen(); // this will open the pro modal.
         }
     });
 

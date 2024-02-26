@@ -8,6 +8,7 @@ import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MAX_FREE_BOARDS } from "@/constants/boards";
 import { getAvailableFreeBoards } from "@/lib/org-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 /**
  * Renders a list of boards.
@@ -33,6 +34,9 @@ export const BoardList = async () => {
 
   // this will get the number of available free boards for the organization.
   const availableFreeBoards = await getAvailableFreeBoards();
+
+  // this will check if the organization has a pro subscription.
+  const isPro = await checkSubscription(); 
 
   return (
     <div className="space-y-4">
@@ -67,7 +71,7 @@ export const BoardList = async () => {
               <p className="text-sm"> Create new board</p>
             </div>
             <span className="text-xs">
-              {`${MAX_FREE_BOARDS - availableFreeBoards} remaining`}
+              {isPro ? "Unlimited" :`${MAX_FREE_BOARDS - availableFreeBoards} remaining`}
             </span>
             <Hint
               description={`Free workspaces can have up to 5 boards. Upgrade to a paid plan to create more.`}

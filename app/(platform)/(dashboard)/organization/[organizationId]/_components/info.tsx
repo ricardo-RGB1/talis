@@ -6,10 +6,14 @@ import { useOrganization } from "@clerk/nextjs";
 import { CreditCard } from "lucide-react";
 import Image from "next/image";
 
+interface InfoProps {
+  isPro: boolean;
+}
+
 /**
  * Renders the organization information.
  */
-export const Info = () => {
+export const Info = ({ isPro }: InfoProps) => {
   const { organization, isLoaded } = useOrganization();
 
   if (!isLoaded) {
@@ -32,7 +36,7 @@ export const Info = () => {
         {/* this will be dynamic when implementing subscriptions */}
         <div className="flex items-center text-xs text-muted-foreground">
           <CreditCard className="h-3 w-3 mr-1" />
-          Free
+          {isPro ? "Pro" : "Free"}
         </div>
       </div>
     </div>
