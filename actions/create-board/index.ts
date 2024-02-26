@@ -8,6 +8,11 @@ import { CreateBoard } from "./schema";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { createdAuditLog } from "@/lib/create-audit-log";
 import { ACTION, ENTITY_TYPE } from "@prisma/client";
+import {
+  incrementAvailableCount,
+  hasReachedMaxFreeBoards
+} from "@/lib/org-limit";
+
 
 /**
  * Handles the creation of a board.
@@ -18,9 +23,20 @@ import { ACTION, ENTITY_TYPE } from "@prisma/client";
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth(); // this will get the user and org id from the session.
 
+  // if the user or org id is missing, return an error.
   if (!userId || !orgId) {
     return {
       error: "Unauthorized",
+    };
+  }
+
+  // this will check if the organization has reached the maximum number of free boards.
+  const hasReachedMax = await hasReachedMaxFreeBoards(); 
+
+  // if the organization has reached the maximum number of free boards, return an error.
+  if (!hasReachedMax) { 
+    return {
+      error: "You have reached the maximum number of free boards."
     };
   }
 
@@ -32,8 +48,7 @@ const handler = async (data: InputType): Promise<ReturnType> => {
    * @param image - The image string to be split.
    * @returns An array containing the individual values of the image string.
    */
-  const [imageId, imageThumbUrl, imageFullUrl, imageLinkHTML, imageUserName] =
-    image.split("|"); // this will split the image string into individual values.
+  const [imageId, imageThumbUrl, imageFullUrl, imageLinkHTML, imageUserName] = image.split("|"); 
 
   // if any of the required fields are missing, return an error.
   if (
@@ -62,6 +77,10 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         imageUserName,
       },
     });
+
+    // After creating the board, increment the available board count for the organization.
+    await incrementAvailableCount();
+
     // Create an audit log
     await createdAuditLog({
       entityTitle: board.title,

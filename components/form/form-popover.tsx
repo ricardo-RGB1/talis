@@ -42,6 +42,7 @@ export const FormPopover = ({
     const closeRef = useRef<ElementRef<"button">>(null) // this will be used to close the popover.
     
     
+    // this will create a new board.
     const { execute, fieldErrors } = useAction(createBoard, { 
         onSuccess: (data) => {
             toast.success('Board created successfully');
@@ -49,7 +50,7 @@ export const FormPopover = ({
             router.push(`/board/${data.id}`); // this will redirect the user to the board page.
         },
         onError:(error) => {
-            toast.error('Failed to create board');
+            toast.error(error); // this will display an error message.
         }
     });
 

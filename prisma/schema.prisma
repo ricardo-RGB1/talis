@@ -58,32 +58,38 @@ model Card {
   @@index([listId])
 }
 
-
- 
-enum ACTION { // Action that can be performed on an entity
+enum ACTION {
   CREATE // Create is a reserved keyword in Prisma, so we use uppercase
   UPDATE // Update is a reserved keyword in Prisma, so we use uppercase
   DELETE
 }
 
-enum ENTITY_TYPE { // Entity on which action is performed
+enum ENTITY_TYPE {
   BOARD
   LIST
   CARD
 }
 
-
 model AuditLog {
-  id          String     @id @default(uuid())
+  id          String      @id @default(uuid())
   orgId       String
   action      ACTION
   entityType  ENTITY_TYPE
   entityTitle String
   entityId    String
   userId      String
-  userImage   String     @db.Text
-  userName    String     @db.Text
+  userImage   String      @db.Text
+  userName    String      @db.Text
 
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrgLimit {
+  id          String @id @default(uuid())
+  orgId       String @unique
+  count       Int @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt 
 }

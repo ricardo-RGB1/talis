@@ -1,11 +1,13 @@
 import { Hint } from "@/components/form/hint";
-import { HelpCircle, User2 } from "lucide-react";
+import { HelpCircle, Plus, User2 } from "lucide-react";
 import { FormPopover } from "@/components/form/form-popover";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MAX_FREE_BOARDS } from "@/constants/boards";
+import { getAvailableFreeBoards } from "@/lib/org-limit";
 
 /**
  * Renders a list of boards.
@@ -19,15 +21,18 @@ export const BoardList = async () => {
     return redirect("/select-org");
   }
 
-  // fetch the boards for the organization.
+  // this will get the boards for the organization.
   const boards = await db.board.findMany({
     where: {
-      orgId, // "only return the boards where the orgId field matches the orgId I provided".
+      orgId,
     },
     orderBy: {
       createdAt: "desc",
     },
-  });
+  }); 
+
+  // this will get the number of available free boards for the organization.
+  const availableFreeBoards = await getAvailableFreeBoards();
 
   return (
     <div className="space-y-4">
@@ -57,8 +62,13 @@ export const BoardList = async () => {
             role="button"
             className="aspect-video relative h-full w-full bg-muted rounded-sm flex flex-col gap-y-1 items-center justify-center hover:opacity-75 transition"
           >
-            <p className="text-sm">Create new board</p>
-            <span className="text-xs">5 remaining</span>
+            <div className="flex items-center">
+              <Plus className="h-4 w-4 mr-1" />
+              <p className="text-sm"> Create new board</p>
+            </div>
+            <span className="text-xs">
+              {`${MAX_FREE_BOARDS - availableFreeBoards} remaining`}
+            </span>
             <Hint
               description={`Free workspaces can have up to 5 boards. Upgrade to a paid plan to create more.`}
               sideOffset={40}
@@ -72,16 +82,16 @@ export const BoardList = async () => {
   );
 };
 
- 
+
 BoardList.Skeleton = function SkeletonBoardList() {
-    return (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-            <Skeleton className="aspect-video h-full w-full p-2" />
-        </div>
-    )
-}
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <Skeleton className="aspect-video h-full w-full p-2" />
+      <Skeleton className="aspect-video h-full w-full p-2" />
+      <Skeleton className="aspect-video h-full w-full p-2" />
+      <Skeleton className="aspect-video h-full w-full p-2" />
+      <Skeleton className="aspect-video h-full w-full p-2" />
+      <Skeleton className="aspect-video h-full w-full p-2" />
+    </div>
+  );
+};

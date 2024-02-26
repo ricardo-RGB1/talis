@@ -5,7 +5,6 @@ import { auth } from "@clerk/nextjs";
 import { InputType, ReturnType } from "./types";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
-import { create } from "lodash";
 import { createSafeAction } from "@/lib/create-safe-action";
 import { UpdateBoard } from "./schema";
 import { createdAuditLog } from "@/lib/create-audit-log";
