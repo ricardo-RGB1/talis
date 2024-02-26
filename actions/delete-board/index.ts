@@ -11,9 +11,11 @@ import { redirect } from "next/navigation";
 import { createdAuditLog } from "@/lib/create-audit-log";
 import { ENTITY_TYPE, ACTION } from "@prisma/client";
 import { decreaseAvailableCount } from "@/lib/org-limit";
+import { checkSubscription } from "@/lib/subscription";
 
 const handler = async (data: InputType): Promise<ReturnType> => {
   const { userId, orgId } = auth();
+  const isPro = await checkSubscription();
 
   if (!userId || !orgId) {
     return {
@@ -32,9 +34,11 @@ const handler = async (data: InputType): Promise<ReturnType> => {
         orgId,
       },
     });
-  
-    // Decrease the available count for the organization
-    await decreaseAvailableCount();
+
+    // Decrease the available count if the user is not a pro user
+    if (!isPro) {
+      await decreaseAvailableCount();
+    }
 
     // Create an audit log
     await createdAuditLog({

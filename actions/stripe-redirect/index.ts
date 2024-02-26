@@ -32,7 +32,8 @@ const handler = async (data: InputType): Promise<ReturnType> => {
 
   let url = ""; // The URL to redirect to
 
-  // Create a new Stripe checkout session
+  // ****************************************************
+  // Create a new Stripe checkout session for the organization ****************************************************
   try {
     // Get the organization's subscription
     const orgSubscription = await db.orgSubscription.findUnique({
